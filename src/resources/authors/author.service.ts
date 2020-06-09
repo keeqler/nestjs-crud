@@ -5,7 +5,7 @@ import { RepositoryService } from '~/repository/repository.service';
 
 import { Author } from '~/database/entities/author.entity';
 
-import { CreateAuthorBodyDto } from './dto/create-author.dto';
+import { IAuthor } from './author.interface';
 
 @Injectable()
 export class AuthorService {
@@ -15,10 +15,8 @@ export class AuthorService {
     this.authorRepository = this.repositoryService.authorRepository;
   }
 
-  async createAuthor(body: CreateAuthorBodyDto): Promise<Author> {
-    const author = this.authorRepository.create(body);
-
-    console.log(author);
+  async createAuthor(data: IAuthor): Promise<Author> {
+    const author = this.authorRepository.create(data);
 
     return await this.authorRepository.save(author);
   }

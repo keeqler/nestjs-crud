@@ -14,6 +14,10 @@ export class AuthorController {
     @Body() body: CreateAuthorBodyDto,
     @Res() response: Response
   ): Promise<Response> {
-    return response.status(201).send(await this.authorService.createAuthor(body));
+    const { name } = body;
+
+    await this.authorService.createAuthor({ name });
+
+    return response.status(201).send();
   }
 }
