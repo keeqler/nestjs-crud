@@ -16,6 +16,12 @@ export class AuthorController {
   ): Promise<Response> {
     const { name } = body;
 
+    const authorNameInUse = await this.authorService.findAuthor({ name });
+
+    if (authorNameInUse) {
+      return response.status(400).send({ error: 'nameInUse' });
+    }
+
     await this.authorService.createAuthor({ name });
 
     return response.status(201).send();

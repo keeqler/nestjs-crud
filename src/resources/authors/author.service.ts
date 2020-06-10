@@ -20,4 +20,8 @@ export class AuthorService {
 
     return await this.authorRepository.save(author);
   }
+
+  async findAuthor(data: IAuthor): Promise<Author> | null {
+    return await this.authorRepository.findOne({ where: data });
+  }
 }
