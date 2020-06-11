@@ -4,9 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RepositoryService } from './repository.service';
 
 import { Author } from '~/database/entities/author.entity';
+import { Post } from '~/database/entities/post.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Author])],
+  imports: [TypeOrmModule.forFeature([Author, Post])],
   providers: [RepositoryService],
   exports: [RepositoryService],
 })

@@ -21,6 +21,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       if (status === 400) {
         body = { errors: (exception.getResponse() as BadRequestResponse).message };
       }
+    } else {
+      console.error(exception);
     }
 
     response.status(status).send(body);

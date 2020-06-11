@@ -1,10 +1,13 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
+  OneToMany,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { Post } from './post.entity';
 
 @Entity('authors')
 export class Author {
@@ -19,4 +22,7 @@ export class Author {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => Post, post => post.author)
+  posts: Promise<Post[]>;
 }
