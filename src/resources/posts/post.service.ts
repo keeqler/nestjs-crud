@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, DeepPartial } from 'typeorm';
 
 import { RepositoryService } from '~/repository/repository.service';
 
@@ -33,5 +33,11 @@ export class PostService {
 
   public async findPost(id: number): Promise<Post> {
     return await this.postRepository.findOne(id);
+  }
+
+  public async editPost(entityInstance: Post, data: DeepPartial<Post>): Promise<Post> {
+    const post = this.postRepository.merge(entityInstance, data);
+
+    return await this.postRepository.save(post);
   }
 }

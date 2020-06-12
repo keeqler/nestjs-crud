@@ -1,5 +1,6 @@
-import { Controller, Body, Headers, Res, Post, Get, Query, Param } from '@nestjs/common';
+import { Controller, Body, Headers, Res, Post, Get, Query, Param, Patch } from '@nestjs/common';
 import { Response } from 'express';
+import * as _ from 'lodash';
 
 import { AuthorService } from '~/resources/authors/author.service';
 
@@ -12,6 +13,7 @@ import {
 
 import { PostService } from './post.service';
 import { GetPostQueryDto } from './dto/get-post.dto';
+import { EditPostParamsDto, EditPostBodyDto, EditPostHeadersDto } from './dto/edit-post.dto';
 
 @Controller('authors')
 export class PostController {
@@ -62,5 +64,39 @@ export class PostController {
     const post = await this.postService.findPost(params.id);
 
     return response.send(post);
+  }
+
+  @Patch('/posts/:id')
+  async editPost(
+    @Param() params: EditPostParamsDto,
+    @Body() body: EditPostBodyDto,
+    @Headers() headers: EditPostHeadersDto,
+    @Res() response: Response
+  ): Promise<Response> {
+    const authorName = headers['x-author'];
+    const { id } = params;
+    const { title, text } = body;
+
+    const author = await this.authorService.findAuthor({ name: authorName });
+
+    if (!author) {
+      return response.status(400).send({ error: 'unexistentAuthor' });
+    }
+
+    const post = await this.postService.findPost(id);
+
+    if (!post) {
+      return response.status(400).send({ error: 'unexistentPost' });
+    }
+    if (post.authorId !== author.id) {
+      return response.sendStatus(403);
+    }
+
+    await this.postService.editPost(
+      post,
+      _.omitBy({ title, text }, _.isEmpty) // omitBy() will remove empty values
+    );
+
+    return response.sendStatus(204);
   }
 }

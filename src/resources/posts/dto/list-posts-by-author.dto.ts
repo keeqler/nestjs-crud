@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsInt, Min, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsInt, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class ListPostsByAuthorParamsDto {
