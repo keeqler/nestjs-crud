@@ -35,10 +35,8 @@ export class PostService {
     return await this.postRepository.findOne(id);
   }
 
-  public async editPost(entityInstance: Post, data: DeepPartial<Post>): Promise<Post> {
-    const post = this.postRepository.merge(entityInstance, data);
-
-    return await this.postRepository.save(post);
+  public async editPost(id: number, data: DeepPartial<Post>): Promise<void> {
+    await this.postRepository.update(id, data);
   }
 
   public async deletePost(id: number): Promise<DeleteResult> {

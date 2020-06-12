@@ -105,7 +105,7 @@ export class PostController {
     }
 
     await this.postService.editPost(
-      post,
+      post.id,
       _.omitBy({ title, text }, _.isEmpty) // omitBy() will remove empty values
     );
 
