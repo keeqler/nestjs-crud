@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsInt, Min, MaxLength, ValidateIf } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-export class EditPostParamsDto {
+export class UpdatePostParamsDto {
   @IsNotEmpty()
   @IsInt()
   @Min(1)
@@ -9,18 +9,18 @@ export class EditPostParamsDto {
   readonly id: number;
 }
 
-export class EditPostBodyDto {
-  @ValidateIf((body: EditPostBodyDto) => !body.text)
+export class UpdatePostBodyDto {
+  @ValidateIf((body: UpdatePostBodyDto) => !body.text)
   @IsNotEmpty()
   @MaxLength(30)
   readonly title: string;
 
-  @ValidateIf((body: EditPostBodyDto) => !body.title)
+  @ValidateIf((body: UpdatePostBodyDto) => !body.title)
   @IsNotEmpty()
   @MaxLength(255)
   readonly text: string;
 }
 
-export class EditPostHeadersDto {
+export class UpdatePostHeadersDto {
   readonly 'x-author': string;
 }

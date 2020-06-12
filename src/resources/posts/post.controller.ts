@@ -16,13 +16,17 @@ import * as _ from 'lodash';
 import { AuthorService } from '~/resources/authors/author.service';
 
 import { CreatePostHeadersDto, CreatePostBodyDto } from './dto/create-post.dto';
-import { FindPostsQueryDto } from './dto/find-posts.dto';
+import { ListPostsQueryDto } from './dto/list-posts.dto';
 import {
   ListPostsByAuthorParamsDto,
   ListPostsByAuthorQueryDto,
 } from './dto/list-posts-by-author.dto';
 import { GetPostQueryDto } from './dto/get-post.dto';
-import { EditPostParamsDto, EditPostBodyDto, EditPostHeadersDto } from './dto/edit-post.dto';
+import {
+  UpdatePostParamsDto,
+  UpdatePostBodyDto,
+  UpdatePostHeadersDto,
+} from './dto/update-post.dto';
 import { DeletePostParamsDto, DeletePostHeadersDto } from './dto/delete-post.dto';
 
 import { PostService } from './post.service';
@@ -37,10 +41,9 @@ export class PostController {
     @Body() body: CreatePostBodyDto,
     @Res() response: Response
   ) {
-    const authorName = headers['x-author'];
     const { title, text } = body;
 
-    const author = await this.authorService.findAuthor({ name: authorName });
+    const author = await this.authorService.findAuthor({ name: headers['x-author'] });
 
     if (!author) {
       return response.status(400).send({ error: 'unexistentAuthor' });
@@ -52,8 +55,8 @@ export class PostController {
   }
 
   @Get('/posts')
-  async listPosts(@Query() query: FindPostsQueryDto, @Res() response: Response): Promise<Response> {
-    const { posts, count } = await this.postService.findPosts(query.page);
+  async listPosts(@Query() query: ListPostsQueryDto, @Res() response: Response): Promise<Response> {
+    const { posts, count } = await this.postService.findManyPosts(query.page);
 
     return response.header('X-Total-Count', count.toString()).send(posts);
   }
@@ -64,7 +67,7 @@ export class PostController {
     @Query() query: ListPostsByAuthorQueryDto,
     @Res() response: Response
   ): Promise<Response> {
-    const { posts, count } = await this.postService.findPosts(query.page, {
+    const { posts, count } = await this.postService.findManyPosts(query.page, {
       authorId: params.authorId,
     });
 
@@ -73,29 +76,31 @@ export class PostController {
 
   @Get('/posts/:id')
   async getPost(@Param() params: GetPostQueryDto, @Res() response: Response): Promise<Response> {
-    const post = await this.postService.findPost(params.id);
+    const post = await this.postService.findPostById(params.id);
+
+    if (!post) {
+      return response.status(400).send({ error: 'unexistentPost' });
+    }
 
     return response.send(post);
   }
 
   @Patch('/posts/:id')
-  async editPost(
-    @Param() params: EditPostParamsDto,
-    @Body() body: EditPostBodyDto,
-    @Headers() headers: EditPostHeadersDto,
+  async updatePost(
+    @Headers() headers: UpdatePostHeadersDto,
+    @Param() params: UpdatePostParamsDto,
+    @Body() body: UpdatePostBodyDto,
     @Res() response: Response
   ): Promise<Response> {
-    const authorName = headers['x-author'];
-    const { id } = params;
     const { title, text } = body;
 
-    const author = await this.authorService.findAuthor({ name: authorName });
+    const author = await this.authorService.findAuthor({ name: headers['x-author'] });
 
     if (!author) {
       return response.status(400).send({ error: 'unexistentAuthor' });
     }
 
-    const post = await this.postService.findPost(id);
+    const post = await this.postService.findPostById(params.id);
 
     if (!post) {
       return response.status(400).send({ error: 'unexistentPost' });
@@ -104,7 +109,7 @@ export class PostController {
       return response.sendStatus(403);
     }
 
-    await this.postService.editPost(
+    await this.postService.updatePost(
       post.id,
       _.omitBy({ title, text }, _.isEmpty) // omitBy() will remove empty values
     );
@@ -114,20 +119,17 @@ export class PostController {
 
   @Delete('/posts/:id')
   async deletePost(
-    @Param() params: DeletePostParamsDto,
     @Headers() headers: DeletePostHeadersDto,
+    @Param() params: DeletePostParamsDto,
     @Res() response: Response
   ): Promise<Response> {
-    const authorName = headers['x-author'];
-    const { id } = params;
-
-    const author = await this.authorService.findAuthor({ name: authorName });
+    const author = await this.authorService.findAuthor({ name: headers['x-author'] });
 
     if (!author) {
       return response.status(400).send({ error: 'unexistentAuthor' });
     }
 
-    const post = await this.postService.findPost(id);
+    const post = await this.postService.findPostById(params.id);
 
     if (!post) {
       return response.status(400).send({ error: 'unexistentPost' });

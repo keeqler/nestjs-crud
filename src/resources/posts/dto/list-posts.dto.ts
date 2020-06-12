@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsInt, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-export class FindPostsQueryDto {
+export class ListPostsQueryDto {
   @IsNotEmpty()
   @IsInt()
   @Min(1)
