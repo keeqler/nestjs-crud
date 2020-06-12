@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, DeepPartial } from 'typeorm';
 
 import { RepositoryService } from '~/repository/repository.service';
 
 import { Author } from '~/database/entities/author.entity';
-
-import { FindAuthorData, CreateAuthorData } from './author.interface';
 
 @Injectable()
 export class AuthorService {
@@ -15,13 +13,13 @@ export class AuthorService {
     this.authorRepository = this.repositoryService.authorRepository;
   }
 
-  async createAuthor(data: CreateAuthorData): Promise<Author> {
+  async createAuthor(data: DeepPartial<Author>): Promise<Author> {
     const author = this.authorRepository.create(data);
 
     return await this.authorRepository.save(author);
   }
 
-  async findAuthor(where: FindAuthorData): Promise<Author> | null {
+  async findOneAuthor(where: DeepPartial<Author>): Promise<Author> {
     return await this.authorRepository.findOne({ where });
   }
 }

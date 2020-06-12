@@ -43,7 +43,7 @@ export class PostController {
   ) {
     const { title, text } = body;
 
-    const author = await this.authorService.findAuthor({ name: headers['x-author'] });
+    const author = await this.authorService.findOneAuthor({ name: headers['x-author'] });
 
     if (!author) {
       return response.status(400).send({ error: 'unexistentAuthor' });
@@ -94,7 +94,7 @@ export class PostController {
   ): Promise<Response> {
     const { title, text } = body;
 
-    const author = await this.authorService.findAuthor({ name: headers['x-author'] });
+    const author = await this.authorService.findOneAuthor({ name: headers['x-author'] });
 
     if (!author) {
       return response.status(400).send({ error: 'unexistentAuthor' });
@@ -123,7 +123,7 @@ export class PostController {
     @Param() params: DeletePostParamsDto,
     @Res() response: Response
   ): Promise<Response> {
-    const author = await this.authorService.findAuthor({ name: headers['x-author'] });
+    const author = await this.authorService.findOneAuthor({ name: headers['x-author'] });
 
     if (!author) {
       return response.status(400).send({ error: 'unexistentAuthor' });

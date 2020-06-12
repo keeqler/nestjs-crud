@@ -16,7 +16,7 @@ export class AuthorController {
   ): Promise<Response> {
     const { name } = body;
 
-    const authorNameInUse = await this.authorService.findAuthor({ name });
+    const authorNameInUse = await this.authorService.findOneAuthor({ name });
 
     if (authorNameInUse) {
       return response.status(400).send({ error: 'nameInUse' });
